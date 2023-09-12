@@ -13,6 +13,13 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Exam System</name>
 	<description>Final project about an exam system in java language using Spring Boot 3 framework.</description>
+	<developers>
+		<developer>
+			<id>LR7UN0</id>
+			<name>Dávid Komlósi</name>
+			<email>komlosidavid19990410@gmail.com</email>
+		</developer>
+	</developers>
 	<properties>
 		<java.version>20</java.version>
 	</properties>
