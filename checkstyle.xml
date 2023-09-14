@@ -8,4 +8,7 @@
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
+    <module>
+        <property name="file" value="./src/main/java/inf.unideb.hu.exam.system/models/ExamSystemApplication" />
+    </module>
 </module>
