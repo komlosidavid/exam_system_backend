@@ -30,22 +30,6 @@ public class Question {
     @GeneratedValue
     private UUID id;
     /**
-     * Creator of the question.
-     */
-    @ManyToOne(
-            fetch = FetchType.LAZY
-    )
-    @JsonManagedReference
-    private User creator;
-    /**
-     * Set of the collaborators.
-     * This property can be null.
-     */
-    @ManyToMany(
-            fetch = FetchType.LAZY
-    )
-    private Set<User> collaborators;
-    /**
      * Set for holding answers.
      */
     @OneToMany(
