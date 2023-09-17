@@ -5,6 +5,8 @@ import inf.unideb.hu.exam.system.models.Pair;
 import inf.unideb.hu.exam.system.models.Test;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.request.UpdateTestEntityRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +21,7 @@ public interface TestService {
      * Get all test entities from the database.
      * @return a {@link List} of {@link Test} entities.
      */
-    List<Test> getAllTests();
+    Page<Test> getAllTests(Pageable pageable);
 
     /**
      * Function to create a {@link Test} entity.
