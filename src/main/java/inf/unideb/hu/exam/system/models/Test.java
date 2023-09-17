@@ -47,6 +47,19 @@ public class Test {
     )
     private Set<User> collaborators;
     /**
+     * Set for holding students.
+     */
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REFRESH
+    )
+    private Set<User> students;
+    /**
+     * Count of students who are finished.
+     */
+    @Builder.Default
+    private int finishedStudents = 0;
+    /**
      * Set for holding question for test.
      */
     @OneToMany(
