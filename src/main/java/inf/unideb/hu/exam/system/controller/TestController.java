@@ -3,10 +3,13 @@ package inf.unideb.hu.exam.system.controller;
 
 import inf.unideb.hu.exam.system.dto.TestDto;
 import inf.unideb.hu.exam.system.models.ResponseMessage;
+import inf.unideb.hu.exam.system.models.Test;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.service.impl.TestServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,12 +72,10 @@ public class TestController {
             method = RequestMethod.GET,
             produces = APPLICATION_JSON_VALUE
     )
-    public List<TestDto> getAllTests() {
-        var testEntities = service.getAllTests();
+    public Page<TestDto> getAllTests(Pageable pageable) {
+        var entityPage = service.getAllTests(pageable);
 
-        return testEntities.stream()
-                .map(entity -> modelMapper.map(entity, TestDto.class))
-                .collect(Collectors.toList());
+        return entityPage.map(entity -> modelMapper.map(entity, TestDto.class));
     }
 
 }
