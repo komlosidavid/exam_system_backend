@@ -2,6 +2,8 @@
 package inf.unideb.hu.exam.system.dto;
 
 import inf.unideb.hu.exam.system.models.Question;
+import inf.unideb.hu.exam.system.models.User;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
@@ -29,6 +31,14 @@ public class TestDto {
      * Collaborators for the test.
      */
     private Set<UserDto> collaborators;
+    /**
+     * Set for holding students.
+     */
+    private Set<User> students;
+    /**
+     * Count of students who are finished.
+     */
+    private int finishedStudents;
     /**
      * Set for holding question for test.
      */
