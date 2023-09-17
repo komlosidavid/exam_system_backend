@@ -26,6 +26,10 @@ public class CreateTestEntityRequest {
      */
     private List<UUID> collaborators;
     /**
+     * Students for the test.
+     */
+    private List<UUID> students;
+    /**
      * Set for holding question for test.
      */
     private Set<UUID> questions;
