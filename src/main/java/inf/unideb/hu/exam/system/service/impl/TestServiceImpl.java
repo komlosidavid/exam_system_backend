@@ -10,6 +10,8 @@ import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.request.UpdateTestEntityRequest;
 import inf.unideb.hu.exam.system.service.TestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -30,8 +32,8 @@ public class TestServiceImpl implements TestService {
      * @return a {@link List} of {@link Test} entities.
      */
     @Override
-    public List<Test> getAllTests() {
-        return repository.findAll();
+    public Page<Test> getAllTests(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     /**
@@ -44,6 +46,7 @@ public class TestServiceImpl implements TestService {
     public Pair<Optional<Test>> createTest(CreateTestEntityRequest request) {
         var creatorOptional = userRepository.findById(request.getCreator());
         var collaborators = new HashSet<User>();
+        var students = new HashSet<User>();
 
         // Check if the creator exists.
         if (creatorOptional.isEmpty()) {
@@ -64,11 +67,25 @@ public class TestServiceImpl implements TestService {
             }
         }
 
+        // Check if all students exist.
+        Optional<User> studentOptional;
+        for (UUID student : request.getStudents()) {
+            studentOptional = userRepository.findById(student);
+            if (studentOptional.isEmpty()) {
+                return new Pair<>(Optional.empty(),
+                        "One of the students was not found!");
+            }
+            else {
+                students.add(studentOptional.get());
+            }
+        }
+
         // If users were found create the new entity.
         var newTestEntity = Test.builder()
                 .subject(request.getSubject())
                 .creator(creatorOptional.get())
                 .collaborators(collaborators)
+                .students(students)
                 // TODO: create questions
                 .build();
 
