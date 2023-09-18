@@ -3,7 +3,6 @@ package inf.unideb.hu.exam.system.controller;
 
 import inf.unideb.hu.exam.system.dto.TestDto;
 import inf.unideb.hu.exam.system.models.ResponseMessage;
-import inf.unideb.hu.exam.system.models.Test;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.service.impl.TestServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
