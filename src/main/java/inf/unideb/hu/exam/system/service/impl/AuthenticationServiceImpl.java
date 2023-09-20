@@ -93,7 +93,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Pair<Optional<AuthenticationResponse>> refreshToken(
             HttpServletRequest request,
             HttpServletResponse response) {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String authHeader =
+
+                request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String username;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
