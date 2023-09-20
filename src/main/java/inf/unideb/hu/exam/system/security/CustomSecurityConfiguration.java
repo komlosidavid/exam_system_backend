@@ -21,6 +21,7 @@ public class CustomSecurityConfiguration {
 
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final CustomCorsConfiguration corsConfiguration;
     private final LogoutHandler logoutHandler;
 
     @Bean
@@ -40,6 +41,8 @@ public class CustomSecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(tokenAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)
+                .cors(cors -> cors.configurationSource(corsConfiguration
+                        .corsConfigurationSource()))
                 .logout(
                         logout -> logout.logoutUrl("/api/v1/auth/logout")
                                 .addLogoutHandler(logoutHandler)
