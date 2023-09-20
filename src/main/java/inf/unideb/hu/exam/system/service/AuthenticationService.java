@@ -14,8 +14,10 @@ public interface AuthenticationService {
 
     Pair<Optional<AuthenticationResponse>>
     register(CreateUserEntityRequest request);
+
     AuthenticationResponse authenticate(
             AuthenticationRequest request);
+
     Pair<Optional<AuthenticationResponse>>
     refreshToken(HttpServletRequest request,
                  HttpServletResponse response) throws IOException;
