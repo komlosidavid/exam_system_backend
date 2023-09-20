@@ -34,7 +34,8 @@ public class AuthenticationController {
             produces = APPLICATION_JSON_VALUE,
             path = "/register"
     )
-    private ResponseEntity<?> register (@RequestBody CreateUserEntityRequest request) {
+    public ResponseEntity<?> register (
+            @RequestBody CreateUserEntityRequest request) {
         Pair<Optional<AuthenticationResponse>> registerResponse =
                 service.register(request);
 
@@ -53,9 +54,11 @@ public class AuthenticationController {
             produces = APPLICATION_JSON_VALUE,
             path = "/authenticate"
     )
-    private ResponseEntity<?> authenticate (@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<?> authenticate (
+            @RequestBody AuthenticationRequest request) {
         try {
-            AuthenticationResponse authenticate = service.authenticate(request);
+            AuthenticationResponse authenticate =
+                    service.authenticate(request);
             return ResponseEntity.ok(authenticate);
         } catch (BadCredentialsException exception) {
             return new ResponseEntity<>(
@@ -68,8 +71,25 @@ public class AuthenticationController {
             method = RequestMethod.POST,
             path = "/refresh"
     )
-    private void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        var authResponse = service.refreshToken(request, response);
 
+        if (authResponse.getValue().isPresent()) {
+            return ResponseEntity.ok(authResponse.getValue().get());
+        }
+
+        if (authResponse.getMessage().equals("Forbidden!")) {
+            return new ResponseEntity<>(
+                    new ResponseMessage(authResponse.getMessage()),
+                    HttpStatus.FORBIDDEN);
+        }
+        else {
+            return new ResponseEntity<>(
+                    new ResponseMessage(authResponse.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

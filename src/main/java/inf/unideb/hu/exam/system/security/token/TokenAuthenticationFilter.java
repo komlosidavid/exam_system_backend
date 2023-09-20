@@ -27,8 +27,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
+            @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
+        final String authHeader = request
+                .getHeader("Authorization");
         final String token;
         final String username;
 
@@ -39,9 +41,14 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             username = jwtService.extractUsername(token);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                if (jwtService.isJwtTokenValid(token, userDetails)) {
+            if (username != null &&
+                    SecurityContextHolder.getContext()
+                            .getAuthentication() == null) {
+                UserDetails userDetails =
+                        this.userDetailsService
+                                .loadUserByUsername(username);
+                if (jwtService.isJwtTokenValid(
+                        token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
@@ -52,7 +59,8 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                             new WebAuthenticationDetailsSource()
                                     .buildDetails(request)
                     );
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authToken);
                 }
             }
             filterChain.doFilter(request, response);

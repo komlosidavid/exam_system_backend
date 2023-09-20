@@ -1,6 +1,5 @@
 package inf.unideb.hu.exam.system.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import inf.unideb.hu.exam.system.dao.TokenDao;
 import inf.unideb.hu.exam.system.dao.UserDao;
 import inf.unideb.hu.exam.system.models.Pair;
@@ -20,7 +19,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -30,12 +28,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserDao repository;
     private final TokenDao tokenRepository;
     private final PasswordEncoder encoder;
-    private final TokenService jwtService;
+    private final TokenService jwtService   ;
     private final AuthenticationManager manager;
 
     @Override
-    public Pair<Optional<AuthenticationResponse>> register(CreateUserEntityRequest request) {
-        Optional<User> userOptional = repository.findByUsername(request.getUsername());
+    public Pair<Optional<AuthenticationResponse>> register(
+            CreateUserEntityRequest request) {
+        Optional<User> userOptional = repository.
+                findByUsername(request.getUsername());
 
         if (userOptional.isPresent()) {
             return new Pair<>(Optional.empty(),
@@ -45,7 +45,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userOptional = repository.findByEmail(request.getEmail());
 
         if (userOptional.isPresent()) {
-            return new Pair<>(Optional.empty(), "User with this email was found!");
+            return new Pair<>(
+                    Optional.empty(),
+                    "User with this email was found!");
         }
 
         var user = User.builder()
@@ -62,7 +64,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, accessToken);
 
-        return new Pair<>(Optional.of(new AuthenticationResponse(accessToken, refreshToken)), null);
+        return new Pair<>(Optional.of(
+                new AuthenticationResponse(accessToken, refreshToken)),
+                null);
     }
 
     @Override
@@ -86,26 +90,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public Pair<Optional<AuthenticationResponse>> refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
-        final String userEmail;
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
+        final String username;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return new Pair<>(Optional.empty(), "Forbidden!");
         }
         refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
-        if (userEmail != null) {
-            var user = this.repository.findByEmail(userEmail)
+        username = jwtService.extractUsername(refreshToken);
+        if (username != null) {
+            var user = this.repository.findByUsername(username)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateJwtToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = new AuthenticationResponse(accessToken, refreshToken);
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+                var authResponse =
+                        new AuthenticationResponse(accessToken, refreshToken);
+                return new Pair<>(Optional.of(authResponse), null);
+                //new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
+
+        return new Pair<>(Optional.empty(), "Internal server error!");
     }
 
     private void saveUserToken(User savedUser, String accessToken) {
@@ -117,7 +127,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private void revokeAllUserTokens(User user) {
-        var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
+        var validUserTokens = tokenRepository.
+                findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty())
             return;
         validUserTokens.forEach(token -> {

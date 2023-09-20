@@ -12,7 +12,11 @@ import java.util.Optional;
 
 public interface AuthenticationService {
 
-    Pair<Optional<AuthenticationResponse>> register(CreateUserEntityRequest request);
-    AuthenticationResponse authenticate(AuthenticationRequest request);
-    void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    Pair<Optional<AuthenticationResponse>>
+    register(CreateUserEntityRequest request);
+    AuthenticationResponse authenticate(
+            AuthenticationRequest request);
+    Pair<Optional<AuthenticationResponse>>
+    refreshToken(HttpServletRequest request,
+                 HttpServletResponse response) throws IOException;
 }

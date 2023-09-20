@@ -45,7 +45,8 @@ public class TestController {
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> createTestEntity(@RequestBody CreateTestEntityRequest request) {
+    public ResponseEntity<?> createTestEntity(
+            @RequestBody CreateTestEntityRequest request) {
         var creationResponse = service.createTest(request);
 
         if (creationResponse.getValue().isPresent()) {

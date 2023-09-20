@@ -36,9 +36,13 @@ public class TokenService {
         return buildToken(claims, userDetails, accessExpiration);
     }
 
-    public boolean isJwtTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isJwtTokenExpired(token);
+    public boolean isJwtTokenValid(
+            String token, UserDetails userDetails) {
+        final String username =
+                extractUsername(token);
+        return username.equals(
+                userDetails.getUsername()) &&
+                !isJwtTokenExpired(token);
     }
 
     private boolean isJwtTokenExpired(String token) {
@@ -53,7 +57,9 @@ public class TokenService {
         return extractClaimFromJwtToken(token, Claims::getSubject);
     }
 
-    public <T> T extractClaimFromJwtToken(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaimFromJwtToken(
+            String token,
+            Function<Claims, T> claimsResolver) {
         final  Claims claims = extractClaimsFromJwtToken(token);
         return claimsResolver.apply(claims);
     }
@@ -67,9 +73,13 @@ public class TokenService {
                 .getBody();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean isTokenValid(String token,
+                                UserDetails userDetails) {
+        final String username =
+                extractUsername(token);
+        return (username.equals(
+                userDetails.getUsername())) &&
+                !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -82,15 +92,20 @@ public class TokenService {
         return Jwts
                 .builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setSubject(userDetails
+                        .getUsername())
+                .setIssuedAt(
+                        new Date(System.currentTimeMillis()))
+                .setExpiration(
+                        new Date(
+                                System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+        return buildToken(new HashMap<>(),
+                userDetails, refreshExpiration);
     }
 
     private Key getSigningKey() {
