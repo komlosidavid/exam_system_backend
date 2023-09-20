@@ -14,6 +14,8 @@ public class UserDto {
      * Primary key.
      */
     private UUID id;
+    private String username;
+    private String email;
     /**
      * Full name of the user.
      */
