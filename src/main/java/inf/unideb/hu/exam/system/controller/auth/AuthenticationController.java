@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -69,6 +70,7 @@ public class AuthenticationController {
 
     @RequestMapping(
             method = RequestMethod.POST,
+            produces = APPLICATION_JSON_VALUE,
             path = "/refresh"
     )
     public ResponseEntity<?> refreshToken(
