@@ -15,6 +15,7 @@ public class CustomCorsConfiguration {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:4200");
         configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("GET");
         configuration.addAllowedHeader("*");
 
         UrlBasedCorsConfigurationSource source =
