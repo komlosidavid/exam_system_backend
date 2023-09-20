@@ -3,18 +3,25 @@ package inf.unideb.hu.exam.system.service.impl;
 
 import inf.unideb.hu.exam.system.dao.TestDao;
 import inf.unideb.hu.exam.system.dao.UserDao;
+import inf.unideb.hu.exam.system.models.GetAllTestsFilter;
 import inf.unideb.hu.exam.system.models.Pair;
 import inf.unideb.hu.exam.system.models.Test;
 import inf.unideb.hu.exam.system.models.User;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.request.UpdateTestEntityRequest;
+import inf.unideb.hu.exam.system.security.token.TokenService;
 import inf.unideb.hu.exam.system.service.TestService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Class for implementing service methods.
@@ -25,6 +32,7 @@ public class TestServiceImpl implements TestService {
 
     private final TestDao repository;
     private final UserDao userRepository;
+    private final TokenService jwtService;
 
     /**
      * Get all test entities from the database.
@@ -32,8 +40,25 @@ public class TestServiceImpl implements TestService {
      * @return a {@link List} of {@link Test} entities.
      */
     @Override
-    public Page<Test> getAllTests(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Test> getAllTests(
+            HttpServletRequest request,
+            String filter,
+            Pageable pageable) {
+        if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.ALL)) {
+            final String headers = request.getHeader(HttpHeaders.AUTHORIZATION);
+            final String token = headers.substring(7);
+            final String username = jwtService.extractUsername(token);
+
+            if (username != null) {
+                var user = userRepository.findByUsername(username);
+                assert user.isPresent();
+                return repository
+                        .findByCreatorOrCollaborators(user.get(),
+                                user.get(), pageable);
+            }
+        }
+
+        return null;
     }
 
     /**
