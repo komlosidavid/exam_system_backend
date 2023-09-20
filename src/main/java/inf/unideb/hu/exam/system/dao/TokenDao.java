@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -18,4 +19,6 @@ public interface TokenDao extends JpaRepository<Token, UUID> {
         (t.expired = false or t.revoked = false)\s
     """)
     List<Token> findAllValidTokenByUser(UUID id);
+
+    Optional<Token> findByToken(String token);
 }
