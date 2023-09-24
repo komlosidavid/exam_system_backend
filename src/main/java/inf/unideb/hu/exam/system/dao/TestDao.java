@@ -22,4 +22,7 @@ public interface TestDao extends JpaRepository<Test, UUID> {
     Page<Test> findByCreatorOrCollaborators(User creator,
                                             User collaborator,
                                             Pageable pageable);
+
+    Page<Test> findByCreator(User creator, Pageable pageable);
+    Page<Test> findByCollaborators(User user, Pageable pageable);
 }
