@@ -44,17 +44,27 @@ public class TestServiceImpl implements TestService {
             HttpServletRequest request,
             String filter,
             Pageable pageable) {
-        if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.ALL)) {
-            final String headers = request.getHeader(HttpHeaders.AUTHORIZATION);
-            final String token = headers.substring(7);
-            final String username = jwtService.extractUsername(token);
+        final String headers = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String token = headers.substring(7);
+        final String username = jwtService.extractUsername(token);
 
-            if (username != null) {
-                var user = userRepository.findByUsername(username);
-                assert user.isPresent();
+        if (username != null) {
+            var user = userRepository.findByUsername(username);
+            assert user.isPresent();
+            if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.ALL)) {
                 return repository
                         .findByCreatorOrCollaborators(user.get(),
                                 user.get(), pageable);
+
+
+            }
+            else if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.OWN)) {
+                return repository
+                        .findByCreator(user.get(), pageable);
+            }
+            else if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.COLLABORATING)) {
+                return repository
+                        .findByCollaborators(user.get(), pageable);
             }
         }
 
