@@ -1,6 +1,7 @@
 
 package inf.unideb.hu.exam.system.request;
 
+import inf.unideb.hu.exam.system.models.Question;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,5 +33,5 @@ public class CreateTestEntityRequest {
     /**
      * Set for holding question for test.
      */
-    private Set<UUID> questions;
+    private Set<CreateQuestionRequest> questions;
 }
