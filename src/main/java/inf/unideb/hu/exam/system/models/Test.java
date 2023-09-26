@@ -1,6 +1,7 @@
 
 package inf.unideb.hu.exam.system.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,11 +28,12 @@ public class Test {
      * Primary key.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     /**
      * Subject of the test.
      */
+    @Column(nullable = false)
     private String subject;
     /**
      * Creator of the test.
@@ -42,16 +44,14 @@ public class Test {
      * Collaborators for the test.
      */
     @ManyToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REFRESH
+            fetch = FetchType.LAZY
     )
     private Set<User> collaborators;
     /**
      * Set for holding students.
      */
     @OneToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.REFRESH
+            fetch = FetchType.LAZY
     )
     private Set<User> students;
     /**
@@ -64,7 +64,8 @@ public class Test {
      */
     @OneToMany(
             fetch = FetchType.LAZY,
-            cascade = CascadeType.REMOVE
+            cascade = CascadeType.ALL,
+            mappedBy = "test"
     )
     @Builder.Default
     private final Set<Question> questions = new HashSet<>();
