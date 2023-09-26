@@ -1,18 +1,20 @@
 
 package inf.unideb.hu.exam.system.service.impl;
 
+import inf.unideb.hu.exam.system.dao.AnswerDao;
+import inf.unideb.hu.exam.system.dao.QuestionDao;
 import inf.unideb.hu.exam.system.dao.TestDao;
 import inf.unideb.hu.exam.system.dao.UserDao;
-import inf.unideb.hu.exam.system.models.GetAllTestsFilter;
-import inf.unideb.hu.exam.system.models.Pair;
-import inf.unideb.hu.exam.system.models.Test;
-import inf.unideb.hu.exam.system.models.User;
+import inf.unideb.hu.exam.system.models.*;
+import inf.unideb.hu.exam.system.models.enums.AnswerType;
+import inf.unideb.hu.exam.system.models.enums.QuestionType;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.request.UpdateTestEntityRequest;
 import inf.unideb.hu.exam.system.security.token.TokenService;
 import inf.unideb.hu.exam.system.service.TestService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -27,11 +29,12 @@ import java.util.UUID;
  * Class for implementing service methods.
  */
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class TestServiceImpl implements TestService {
 
     private final TestDao repository;
     private final UserDao userRepository;
+    private final ModelMapper modelMapper;
     private final TokenService jwtService;
 
     /**
@@ -51,12 +54,11 @@ public class TestServiceImpl implements TestService {
         if (username != null) {
             var user = userRepository.findByUsername(username);
             assert user.isPresent();
+
             if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.ALL)) {
                 return repository
                         .findByCreatorOrCollaborators(user.get(),
                                 user.get(), pageable);
-
-
             }
             else if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.OWN)) {
                 return repository
@@ -68,7 +70,7 @@ public class TestServiceImpl implements TestService {
             }
         }
 
-        return null;
+        return Page.empty();
     }
 
     /**
@@ -79,7 +81,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public Pair<Optional<Test>> createTest(CreateTestEntityRequest request) {
-        var creatorOptional = userRepository.findById(request.getCreator());
+        Optional<User> creatorOptional = userRepository.findById(request.getCreator());
         var collaborators = new HashSet<User>();
         var students = new HashSet<User>();
 
@@ -116,17 +118,44 @@ public class TestServiceImpl implements TestService {
         }
 
         // If users were found create the new entity.
-        var newTestEntity = Test.builder()
+        var test = Test.builder()
                 .subject(request.getSubject())
                 .creator(creatorOptional.get())
                 .collaborators(collaborators)
                 .students(students)
-                // TODO: create questions
                 .build();
 
-        repository.save(newTestEntity);
+        var questions = new HashSet<Question>();
+        var answers = new HashSet<Answer>();
+        request.getQuestions().forEach(questionRequest -> {
+             var question = Question.builder()
+                    .question(questionRequest.getQuestion())
+                    .type(QuestionType.valueOf(questionRequest.getType()))
+                    .points(questionRequest.getPoints())
+                    .build();
 
-        return new Pair<>(Optional.of(newTestEntity), null);
+             questionRequest.getAnswers().forEach(answerRequest -> {
+                 var answer = Answer.builder()
+                         .answer(answerRequest.getAnswer())
+                         .isCorrect(answerRequest.isCorrect())
+                         .type(AnswerType.valueOf(answerRequest.getType()))
+                         .question(question)
+                         .build();
+                 answers.add(answer);
+             });
+
+             question.setAnswers(answers);
+             question.setTest(test);
+             questions.add(question);
+        });
+
+        test.getQuestions().addAll(questions);
+
+        repository.save(test);
+
+        creatorOptional.get().getOwnTests().add(test);
+
+        return new Pair<>(Optional.of(test), null);
     }
 
     /**
