@@ -2,17 +2,14 @@
 package inf.unideb.hu.exam.system.controller;
 
 import inf.unideb.hu.exam.system.dto.TestDto;
-import inf.unideb.hu.exam.system.models.GetAllTestsFilter;
 import inf.unideb.hu.exam.system.models.ResponseMessage;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
-import inf.unideb.hu.exam.system.request.GetAllTestsFilterRequest;
 import inf.unideb.hu.exam.system.service.impl.TestServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
