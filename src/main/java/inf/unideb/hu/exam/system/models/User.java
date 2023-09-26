@@ -31,7 +31,7 @@ public class User implements UserDetails {
      * UUID based primary key.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     /**
      * First name of the user.
@@ -54,8 +54,20 @@ public class User implements UserDetails {
     private Role role;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy = "user")
+    @OneToMany
     private List<Token> tokens;
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "creator"
+    )
+    private Set<Test> ownTests;
+    @ManyToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "collaborators"
+    )
+    private Set<Test> collaboratingTests;
     @Builder.Default
     private Instant registeredAt = new Date().toInstant();
 
