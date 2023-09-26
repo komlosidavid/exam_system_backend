@@ -5,6 +5,7 @@ import inf.unideb.hu.exam.system.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -18,7 +19,9 @@ import java.util.UUID;
 @Repository
 public interface UserDao extends JpaRepository<User, UUID> {
 
-    Optional<User> findByUsername(@PathVariable String username);
-    Optional<User> findByEmail(@PathVariable String email);
+
+
+    Optional<User> findByUsername(@Param("username") String username);
+    Optional<User> findByEmail(@Param("email") String email);
     Page<User> findAll(Pageable pageable);
 }
