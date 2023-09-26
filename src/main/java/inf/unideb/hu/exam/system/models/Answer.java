@@ -1,9 +1,9 @@
 
 package inf.unideb.hu.exam.system.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import inf.unideb.hu.exam.system.models.enums.AnswerType;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +25,12 @@ public class Answer {
      * Primary key.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Question question;
+    private String answer;
+    private boolean isCorrect;
+    @Enumerated(EnumType.STRING)
+    private AnswerType type;
 }
