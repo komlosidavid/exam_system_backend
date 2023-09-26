@@ -3,7 +3,6 @@ package inf.unideb.hu.exam.system.dto;
 
 import inf.unideb.hu.exam.system.models.Question;
 import inf.unideb.hu.exam.system.models.User;
-import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
