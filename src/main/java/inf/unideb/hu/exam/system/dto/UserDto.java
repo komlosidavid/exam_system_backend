@@ -3,6 +3,7 @@ package inf.unideb.hu.exam.system.dto;
 
 import lombok.Data;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -20,4 +21,6 @@ public class UserDto {
      * Full name of the user.
      */
     private String fullname;
+    private Set<TestDto> ownTests;
+    private Set<TestDto> collaboratingTests;
 }
