@@ -1,13 +1,10 @@
 
 package inf.unideb.hu.exam.system.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import inf.unideb.hu.exam.system.models.enums.QuestionType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +16,8 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class Question {
 
@@ -27,13 +25,19 @@ public class Question {
      * UUID based primary key.
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false)
+    private String question;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Test test;
     /**
      * Set for holding answers.
      */
     @OneToMany(
-            fetch = FetchType.LAZY
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            mappedBy = "question"
     )
     @Builder.Default
     private Set<Answer> answers = new HashSet<>();
@@ -46,6 +50,7 @@ public class Question {
     /**
      * Points of the question.
      */
-    @Builder.Default
-    private float points = 0f;
+    @Column(nullable = false)
+    private float points;
+
 }
