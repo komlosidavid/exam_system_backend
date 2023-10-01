@@ -1,7 +1,9 @@
 
 package inf.unideb.hu.exam.system.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import inf.unideb.hu.exam.system.models.enums.AnswerType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,9 +27,9 @@ public class Answer {
      * Primary key.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     private UUID id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Question question;
     private String answer;
     private boolean isCorrect;
