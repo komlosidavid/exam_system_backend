@@ -1,7 +1,7 @@
 
 package inf.unideb.hu.exam.system.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +28,7 @@ public class Test {
      * Primary key.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     private UUID id;
     /**
      * Subject of the test.
@@ -43,16 +43,12 @@ public class Test {
     /**
      * Collaborators for the test.
      */
-    @ManyToMany(
-            fetch = FetchType.LAZY
-    )
+    @ManyToMany
     private Set<User> collaborators;
     /**
      * Set for holding students.
      */
-    @OneToMany(
-            fetch = FetchType.LAZY
-    )
+    @OneToMany
     private Set<User> students;
     /**
      * Count of students who are finished.
@@ -63,8 +59,6 @@ public class Test {
      * Set for holding question for test.
      */
     @OneToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
             mappedBy = "test"
     )
     @Builder.Default
