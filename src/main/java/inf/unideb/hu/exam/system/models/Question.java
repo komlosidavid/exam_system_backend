@@ -1,7 +1,9 @@
 
 package inf.unideb.hu.exam.system.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import inf.unideb.hu.exam.system.models.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,18 +27,16 @@ public class Question {
      * UUID based primary key.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     private UUID id;
     @Column(nullable = false)
     private String question;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Test test;
     /**
      * Set for holding answers.
      */
     @OneToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
             mappedBy = "question"
     )
     @Builder.Default
