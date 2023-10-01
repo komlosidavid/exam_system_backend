@@ -1,6 +1,5 @@
 package inf.unideb.hu.exam.system.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import inf.unideb.hu.exam.system.models.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,10 +28,7 @@ public class Token {
     private boolean revoked = false;
     @Builder.Default
     private boolean expired = false;
-    @ManyToOne(
-            fetch = FetchType.LAZY
-    )
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private User user;
 }
