@@ -2,6 +2,7 @@ package inf.unideb.hu.exam.system.service.impl;
 
 import inf.unideb.hu.exam.system.dao.TokenDao;
 import inf.unideb.hu.exam.system.dao.UserDao;
+import inf.unideb.hu.exam.system.dto.UserDto;
 import inf.unideb.hu.exam.system.models.Pair;
 import inf.unideb.hu.exam.system.models.Token;
 import inf.unideb.hu.exam.system.models.User;
@@ -13,6 +14,7 @@ import inf.unideb.hu.exam.system.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserDao repository;
     private final TokenDao tokenRepository;
+    private final ModelMapper modelMapper;
     private final PasswordEncoder encoder;
     private final TokenService jwtService   ;
     private final AuthenticationManager manager;
@@ -65,7 +68,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         saveUserToken(savedUser, accessToken);
 
         return new Pair<>(Optional.of(
-                new AuthenticationResponse(accessToken, refreshToken)),
+                new AuthenticationResponse(accessToken, refreshToken,
+                        modelMapper.map(user, UserDto.class))),
                 null);
     }
 
@@ -86,7 +90,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         revokeAllUserTokens(user.get());
         saveUserToken(user.get(), accessToken);
 
-        return new AuthenticationResponse(accessToken, refreshToken);
+        return new AuthenticationResponse(accessToken, refreshToken,
+                modelMapper.map(user.get(), UserDto.class));
     }
 
     @Override
@@ -111,7 +116,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse =
-                        new AuthenticationResponse(accessToken, refreshToken);
+                        new AuthenticationResponse(accessToken, refreshToken,
+                                modelMapper.map(user, UserDto.class));
                 return new Pair<>(Optional.of(authResponse), null);
                 //new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
