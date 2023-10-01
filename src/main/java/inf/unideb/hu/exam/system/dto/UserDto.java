@@ -1,6 +1,7 @@
 
 package inf.unideb.hu.exam.system.dto;
 
+import inf.unideb.hu.exam.system.models.enums.Role;
 import lombok.Data;
 
 import java.util.Set;
@@ -23,4 +24,5 @@ public class UserDto {
     private String fullname;
     private Set<TestDto> ownTests;
     private Set<TestDto> collaboratingTests;
+    private Role role;
 }
