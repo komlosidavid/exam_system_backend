@@ -15,6 +15,6 @@ import java.util.UUID;
 public interface UserService {
 
     Page<User> getAllUsers(Pageable pageable);
-
+    Page<User> getAllTeachers(Pageable pageable);
     Pair<Optional<User>> getUserById(UUID id);
 }
