@@ -57,6 +57,16 @@ public class UserController {
         return new ResponseEntity<>(
                 new ResponseMessage(serviceResponse.getMessage()),
                 HttpStatus.NOT_FOUND);
-     }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            produces = APPLICATION_JSON_VALUE,
+            path = "/teachers"
+    )
+    public Page<UserDto> getAllTeachers(Pageable pageable) {
+        var result = service.getAllTeachers(pageable);
+        return result.map(user -> modelMapper.map(user, UserDto.class));
+    }
 
 }
