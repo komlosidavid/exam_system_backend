@@ -1,8 +1,7 @@
 
 package inf.unideb.hu.exam.system.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import inf.unideb.hu.exam.system.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,7 +30,7 @@ public class User implements UserDetails {
      * UUID based primary key.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue
     private UUID id;
     /**
      * First name of the user.
@@ -54,17 +53,13 @@ public class User implements UserDetails {
     private Role role;
     @Column(nullable = false)
     private String password;
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private List<Token> tokens;
     @OneToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
             mappedBy = "creator"
     )
     private Set<Test> ownTests;
     @ManyToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
             mappedBy = "collaborators"
     )
     private Set<Test> collaboratingTests;
