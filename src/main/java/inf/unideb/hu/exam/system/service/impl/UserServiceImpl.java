@@ -4,6 +4,7 @@ package inf.unideb.hu.exam.system.service.impl;
 import inf.unideb.hu.exam.system.dao.UserDao;
 import inf.unideb.hu.exam.system.models.Pair;
 import inf.unideb.hu.exam.system.models.User;
+import inf.unideb.hu.exam.system.models.enums.Role;
 import inf.unideb.hu.exam.system.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> getAllUsers(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<User> getAllTeachers(Pageable pageable) {
+        return repository.findAllByRole(Role.TEACHER, pageable);
     }
 
     @Override
