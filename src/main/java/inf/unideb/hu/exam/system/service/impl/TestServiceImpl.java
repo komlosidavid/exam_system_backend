@@ -125,6 +125,8 @@ public class TestServiceImpl implements TestService {
                 .students(students)
                 .build();
 
+        creatorOptional.get().getOwnTests().add(test);
+
         var questions = new HashSet<Question>();
         var answers = new HashSet<Answer>();
         request.getQuestions().forEach(questionRequest -> {
@@ -152,8 +154,6 @@ public class TestServiceImpl implements TestService {
         test.getQuestions().addAll(questions);
 
         repository.save(test);
-
-        creatorOptional.get().getOwnTests().add(test);
 
         return new Pair<>(Optional.of(test), null);
     }
