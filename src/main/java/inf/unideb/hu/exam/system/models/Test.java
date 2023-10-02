@@ -1,7 +1,8 @@
 
 package inf.unideb.hu.exam.system.models;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,11 +40,12 @@ public class Test {
      * Creator of the test.
      */
     @ManyToOne
+    @JoinColumn(name = "creator_id")
     private User creator;
     /**
      * Collaborators for the test.
      */
-    @ManyToMany
+    @OneToMany
     private Set<User> collaborators;
     /**
      * Set for holding students.
@@ -58,11 +60,8 @@ public class Test {
     /**
      * Set for holding question for test.
      */
-    @OneToMany(
-            mappedBy = "test"
-    )
-    @Builder.Default
-    private final Set<Question> questions = new HashSet<>();
+    @OneToMany
+    private Set<Question> questions;
     /**
      * Creation date.
      */
