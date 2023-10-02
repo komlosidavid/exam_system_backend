@@ -1,5 +1,6 @@
 package inf.unideb.hu.exam.system.config;
 
+import inf.unideb.hu.exam.system.dao.UserDao;
 import inf.unideb.hu.exam.system.models.User;
 import inf.unideb.hu.exam.system.models.enums.Role;
 import inf.unideb.hu.exam.system.request.CreateUserEntityRequest;
@@ -15,66 +16,109 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class InitialData {
 
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationService authService;
+    private final UserDao repository;
+    private final PasswordEncoder encoder;
 
     @PostConstruct
     public void createInitialUsers() {
-        var userRequest = new CreateUserEntityRequest();
-        userRequest.setFirstname("Dávid");
-        userRequest.setLastname("Komlósi");
-        userRequest.setUsername("komlosidavid");
-        userRequest.setEmail("komlosidavid19990410@gmail.com");
-        userRequest.setPassword("Krumplisteszta18");
-        userRequest.setRole(Role.ADMIN);
-        authService.register(userRequest);
-
         var user = User.builder()
-                .firstname("Józsi")
-                .lastname("Valaki")
-                .username("valakijozsi")
-                .email("example@gmail.com")
-                .password(passwordEncoder.encode("password"))
+                .firstname("Dávid")
+                .lastname("Komlósi")
+                .username("komlosidavid")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
+                .role(Role.ADMIN)
+                .build();
+
+        repository.save(user);
+
+        user = User.builder()
+                .firstname("Aladár")
+                .lastname("Zsenge")
+                .username("aladar")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
 
+        repository.save(user);
+
         user = User.builder()
-                .firstname("Teréz")
-                .lastname("Vár")
-                .username("varteri")
-                .email("example@gmail.com")
-                .password(passwordEncoder.encode("password"))
+                .firstname("Zsolt")
+                .lastname("Kalapás")
+                .username("kalapas")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
 
-        user = User.builder()
-                .firstname("Balázs")
-                .lastname("Kovács")
-                .username("kovacsbalazs")
-                .email("example@gmail.com")
-                .password(passwordEncoder.encode("password"))
-                .role(Role.TEACHER)
-                .build();
+        repository.save(user);
 
         user = User.builder()
                 .firstname("András")
-                .lastname("Solymosi")
-                .username("solymosiandras")
-                .email("example@gmail.com")
-                .password(passwordEncoder.encode("password"))
-                .role(Role.STUDENT)
+                .lastname("Kemény")
+                .username("kemeny")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
+                .role(Role.TEACHER)
                 .build();
+
+        repository.save(user);
 
         user = User.builder()
-                .firstname("Lajos")
-                .lastname("Aladár")
-                .username("aladarlajos")
-                .email("example@gmail.com")
-                .password(passwordEncoder.encode("password"))
-                .role(Role.STUDENT)
+                .firstname("László")
+                .lastname("Trombitás")
+                .username("trombitas")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
+                .role(Role.TEACHER)
+                .build();
+        repository.save(user);
+
+        user = User.builder()
+                .firstname("Adorján")
+                .lastname("Gellért")
+                .username("geller")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
+                .role(Role.TEACHER)
                 .build();
 
 
+        repository.save(user);
 
+        user = User.builder()
+                .firstname("Károly")
+                .lastname("Mihaszna")
+                .username("mihaszna")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
+                .role(Role.TEACHER)
+                .build();
+
+
+        repository.save(user);
+
+        user = User.builder()
+                .firstname("Adél")
+                .lastname("Kovács")
+                .username("kovacs")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
+                .role(Role.STUDENT)
+                .build();
+
+        repository.save(user);
+
+        user = User.builder()
+                .firstname("Péter")
+                .lastname("Bátor")
+                .username("bator")
+                .email("example@email.com")
+                .password(encoder.encode("password"))
+                .role(Role.STUDENT)
+                .build();
+
+        repository.save(user);
     }
 }
