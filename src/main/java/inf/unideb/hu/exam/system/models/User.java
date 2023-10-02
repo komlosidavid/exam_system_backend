@@ -1,9 +1,12 @@
 
 package inf.unideb.hu.exam.system.models;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import inf.unideb.hu.exam.system.models.enums.Role;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,16 +56,10 @@ public class User implements UserDetails {
     private Role role;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Token> tokens;
-    @OneToMany(
-            mappedBy = "creator"
-    )
+    @OneToMany
     private Set<Test> ownTests;
-    @ManyToMany(
-            mappedBy = "collaborators"
-    )
-    private Set<Test> collaboratingTests;
     @Builder.Default
     private Instant registeredAt = new Date().toInstant();
 
