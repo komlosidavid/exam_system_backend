@@ -13,8 +13,8 @@ import inf.unideb.hu.exam.system.request.UpdateTestEntityRequest;
 import inf.unideb.hu.exam.system.security.token.TokenService;
 import inf.unideb.hu.exam.system.service.TestService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -29,12 +29,14 @@ import java.util.UUID;
  * Class for implementing service methods.
  */
 @Service
+@Transactional
 @AllArgsConstructor
 public class TestServiceImpl implements TestService {
 
     private final TestDao repository;
     private final UserDao userRepository;
-    private final ModelMapper modelMapper;
+    private final QuestionDao questionRepository;
+    private final AnswerDao answerRepository;
     private final TokenService jwtService;
 
     /**
@@ -117,43 +119,39 @@ public class TestServiceImpl implements TestService {
             }
         }
 
-        // If users were found create the new entity.
-        var test = Test.builder()
-                .subject(request.getSubject())
-                .creator(creatorOptional.get())
-                .collaborators(collaborators)
-                .students(students)
-                .build();
-
-        creatorOptional.get().getOwnTests().add(test);
-
         var questions = new HashSet<Question>();
-        var answers = new HashSet<Answer>();
+        // Create all answers.
         request.getQuestions().forEach(questionRequest -> {
-             var question = Question.builder()
+            var question = Question.builder()
                     .question(questionRequest.getQuestion())
                     .type(QuestionType.valueOf(questionRequest.getType()))
                     .points(questionRequest.getPoints())
                     .build();
+            Question questionEntity = questionRepository.save(question);
 
-             questionRequest.getAnswers().forEach(answerRequest -> {
-                 var answer = Answer.builder()
-                         .answer(answerRequest.getAnswer())
-                         .isCorrect(answerRequest.isCorrect())
-                         .type(AnswerType.valueOf(answerRequest.getType()))
-                         .question(question)
-                         .build();
-                 answers.add(answer);
-             });
-
-             question.setAnswers(answers);
-             question.setTest(test);
-             questions.add(question);
+            var answers = new HashSet<Answer>();
+            questionRequest.getAnswers().forEach(answerRequest -> {
+                var answer = Answer.builder()
+                        .answer(answerRequest.getAnswer())
+                        .question(question)
+                        .type(AnswerType.valueOf(answerRequest.getType()))
+                        .isCorrect(answerRequest.isCorrect())
+                        .build();
+                Answer answerEntity = answerRepository.save(answer);
+                answers.add(answerEntity);
+            });
+            questionEntity.setAnswers(answers);
+            questions.add(questionEntity);
         });
 
-        test.getQuestions().addAll(questions);
+        var test = Test.builder()
+                .subject(request.getSubject())
+                .collaborators(collaborators)
+                .questions(questions)
+                .creator(creatorOptional.get())
+                .build();
 
-        repository.save(test);
+        Test testEntity = repository.save(test);
 
         return new Pair<>(Optional.of(test), null);
     }
