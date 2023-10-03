@@ -18,9 +18,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,15 +83,14 @@ public class TestServiceImpl implements TestService {
      * @return a {@link Pair} class holding the data and the response message.
      */
     @Override
-    public Pair<Optional<Test>> createTest(CreateTestEntityRequest request) {
+    public HttpStatus createTest(CreateTestEntityRequest request) {
         Optional<User> creatorOptional = userRepository.findById(request.getCreator());
-        var collaborators = new HashSet<User>();
-        var students = new HashSet<User>();
+        var collaborators = new ArrayList<User>();
+        var students = new ArrayList<User>();
 
         // Check if the creator exists.
         if (creatorOptional.isEmpty()) {
-            return new Pair<>(Optional.empty(),
-                    "Creator was not found!");
+            return HttpStatus.BAD_REQUEST;
         }
 
         // Check if all collaborators exist.
@@ -98,8 +98,7 @@ public class TestServiceImpl implements TestService {
         for (UUID collaborator : request.getCollaborators()) {
             collaboratorOptional = userRepository.findById(collaborator);
             if (collaboratorOptional.isEmpty()) {
-                return new Pair<>(Optional.empty(),
-                        "One of the collaborator was not found!");
+                return HttpStatus.BAD_REQUEST;
             }
             else {
                 collaborators.add(collaboratorOptional.get());
@@ -111,15 +110,14 @@ public class TestServiceImpl implements TestService {
         for (UUID student : request.getStudents()) {
             studentOptional = userRepository.findById(student);
             if (studentOptional.isEmpty()) {
-                return new Pair<>(Optional.empty(),
-                        "One of the students was not found!");
+                return HttpStatus.BAD_REQUEST;
             }
             else {
                 students.add(studentOptional.get());
             }
         }
 
-        var questions = new HashSet<Question>();
+        var questions = new ArrayList<Question>();
         // Create all answers.
         request.getQuestions().forEach(questionRequest -> {
             var question = Question.builder()
@@ -127,9 +125,7 @@ public class TestServiceImpl implements TestService {
                     .type(QuestionType.valueOf(questionRequest.getType()))
                     .points(questionRequest.getPoints())
                     .build();
-            Question questionEntity = questionRepository.save(question);
 
-            var answers = new HashSet<Answer>();
             questionRequest.getAnswers().forEach(answerRequest -> {
                 var answer = Answer.builder()
                         .answer(answerRequest.getAnswer())
@@ -137,11 +133,9 @@ public class TestServiceImpl implements TestService {
                         .type(AnswerType.valueOf(answerRequest.getType()))
                         .isCorrect(answerRequest.isCorrect())
                         .build();
-                Answer answerEntity = answerRepository.save(answer);
-                answers.add(answerEntity);
+                question.getAnswers().add(answer);
             });
-            questionEntity.setAnswers(answers);
-            questions.add(questionEntity);
+            questions.add(question);
         });
 
         var test = Test.builder()
@@ -151,9 +145,10 @@ public class TestServiceImpl implements TestService {
                 .creator(creatorOptional.get())
                 .build();
 
-        Test testEntity = repository.save(test);
+        repository.save(test);
 
-        return new Pair<>(Optional.of(test), null);
+        return HttpStatus.CREATED;
+
     }
 
     /**
