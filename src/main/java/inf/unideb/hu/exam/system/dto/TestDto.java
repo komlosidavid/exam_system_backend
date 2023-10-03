@@ -1,12 +1,10 @@
 
 package inf.unideb.hu.exam.system.dto;
 
-import inf.unideb.hu.exam.system.models.Question;
-import inf.unideb.hu.exam.system.models.User;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,11 +27,11 @@ public class TestDto {
     /**
      * Collaborators for the test.
      */
-    private Set<UserDto> collaborators;
+    private List<UserDto> collaborators;
     /**
      * Set for holding students.
      */
-    private Set<User> students;
+    private List<UserDto> students;
     /**
      * Count of students who are finished.
      */
@@ -41,7 +39,7 @@ public class TestDto {
     /**
      * Set for holding question for test.
      */
-    private Set<Question> questions;
+    private List<QuestionDto> questions;
     /**
      * Creation date.
      */
