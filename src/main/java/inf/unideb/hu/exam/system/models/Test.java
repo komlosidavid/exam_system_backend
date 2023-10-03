@@ -10,10 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Entity class for holding test infos.
@@ -39,19 +36,22 @@ public class Test {
     /**
      * Creator of the test.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
+    @JsonBackReference
     private User creator;
     /**
      * Collaborators for the test.
      */
     @OneToMany
-    private Set<User> collaborators;
+    @Builder.Default
+    private List<User> collaborators = new ArrayList<>();
     /**
      * Set for holding students.
      */
     @OneToMany
-    private Set<User> students;
+    @Builder.Default
+    private List<User> students = new ArrayList<>();
     /**
      * Count of students who are finished.
      */
@@ -60,8 +60,11 @@ public class Test {
     /**
      * Set for holding question for test.
      */
-    @OneToMany
-    private Set<Question> questions;
+    @OneToMany(
+            mappedBy = "test")
+    @JsonManagedReference
+    @Builder.Default
+    private List<Question> questions = new ArrayList<>();
     /**
      * Creation date.
      */
