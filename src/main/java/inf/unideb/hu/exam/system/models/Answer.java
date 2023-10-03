@@ -9,7 +9,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -28,7 +27,9 @@ public class Answer {
     @Id
     @GeneratedValue
     private UUID id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    @JsonBackReference
     private Question question;
     private String answer;
     private boolean isCorrect;
