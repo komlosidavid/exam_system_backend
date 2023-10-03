@@ -3,6 +3,7 @@ package inf.unideb.hu.exam.system.controller;
 
 import inf.unideb.hu.exam.system.dto.TestDto;
 import inf.unideb.hu.exam.system.models.ResponseMessage;
+import inf.unideb.hu.exam.system.models.Test;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.service.impl.TestServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,21 +44,9 @@ public class TestController {
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<?> createTestEntity(
+    public ResponseEntity<HttpStatus> createTestEntity(
             @RequestBody CreateTestEntityRequest request) {
-        var creationResponse = service.createTest(request);
-
-        if (creationResponse.getValue().isPresent()) {
-            var testEntityDto = modelMapper
-                    .map(creationResponse.getValue().get(),
-                            TestDto.class);
-
-            return ResponseEntity.ok(testEntityDto);
-        }
-
-        return new ResponseEntity<>(
-                new ResponseMessage(creationResponse.getMessage()),
-                HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(service.createTest(request)).build();
     }
 
     /**
