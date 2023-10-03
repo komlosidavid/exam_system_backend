@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import inf.unideb.hu.exam.system.models.enums.Role;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -56,10 +55,15 @@ public class User implements UserDetails {
     private Role role;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<Token> tokens;
-    @OneToMany
-    private Set<Test> ownTests;
+    @OneToMany(
+            mappedBy = "creator"
+    )
+    @JsonManagedReference
+    @Builder.Default
+    private List<Test> tests = new ArrayList<>();
     @Builder.Default
     private Instant registeredAt = new Date().toInstant();
 
