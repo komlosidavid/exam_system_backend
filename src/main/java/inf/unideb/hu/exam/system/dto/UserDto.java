@@ -4,8 +4,7 @@ package inf.unideb.hu.exam.system.dto;
 import inf.unideb.hu.exam.system.models.enums.Role;
 import lombok.Data;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Dto class for {@link inf.unideb.hu.exam.system.models.User} entity.
@@ -22,7 +21,6 @@ public class UserDto {
      * Full name of the user.
      */
     private String fullname;
-    private Set<TestDto> ownTests;
-    private Set<TestDto> collaboratingTests;
+    private List<TestDto> tests;
     private Role role;
 }
