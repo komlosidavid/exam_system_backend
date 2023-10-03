@@ -10,10 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Entity class for holding question data's.
@@ -33,13 +30,18 @@ public class Question {
     private UUID id;
     @Column(nullable = false)
     private String question;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_id")
+    @JsonBackReference
     private Test test;
     /**
      * Set for holding answers.
      */
-    @OneToMany
-    private Set<Answer> answers;
+    @OneToMany(
+            mappedBy = "question")
+    @JsonManagedReference
+    @Builder.Default
+    private List<Answer> answers = new ArrayList<>();
     /**
      * Type of the question.
      */
