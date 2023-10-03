@@ -8,6 +8,7 @@ import inf.unideb.hu.exam.system.request.UpdateTestEntityRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public interface TestService {
      * @param request for creating {@link Test} entity.
      * @return a {@link Pair} class holding the data and the response message.
      */
-    Pair<Optional<Test>> createTest(CreateTestEntityRequest request);
+    HttpStatus createTest(CreateTestEntityRequest request);
 
     /**
      * Function to update a {@link Test} entity.
