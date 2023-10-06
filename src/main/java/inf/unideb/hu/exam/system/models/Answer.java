@@ -27,8 +27,7 @@ public class Answer {
     @Id
     @GeneratedValue
     private UUID id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
+    @ManyToOne
     @JsonBackReference
     private Question question;
     private String answer;
