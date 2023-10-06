@@ -26,8 +26,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final TokenService jwtService;
     private final UserDetailsService userDetailsService;
-    private RequestAttributeSecurityContextRepository repository =
-            new RequestAttributeSecurityContextRepository();
 
     @Override
     protected void doFilterInternal(
@@ -41,8 +39,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         final String username;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            repository.saveContext(SecurityContextHolder.getContext(),
-                    request, response);
             filterChain.doFilter(request, response);
         }
         else {
@@ -69,8 +65,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                     );
                     SecurityContextHolder.getContext()
                             .setAuthentication(authToken);
-                    repository.saveContext(SecurityContextHolder.getContext(),
-                            request, response);
                 }
             }
             filterChain.doFilter(request, response);
