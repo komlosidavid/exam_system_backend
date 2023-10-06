@@ -33,8 +33,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getAllTeachers(Pageable pageable) {
-        return repository.findAllByRole(Role.TEACHER, pageable);
+    public Page<User> getAllUsersByRole(Role role, Pageable pageable) {
+        return repository.findAllByRole(role, pageable);
     }
 
     @Override
