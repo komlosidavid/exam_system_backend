@@ -30,15 +30,13 @@ public class Question {
     private UUID id;
     @Column(nullable = false)
     private String question;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_id")
+    @ManyToOne
     @JsonBackReference
     private Test test;
     /**
      * Set for holding answers.
      */
-    @OneToMany(
-            mappedBy = "question")
+    @OneToMany
     @JsonManagedReference
     @Builder.Default
     private List<Answer> answers = new ArrayList<>();
