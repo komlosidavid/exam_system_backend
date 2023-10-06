@@ -55,12 +55,10 @@ public class User implements UserDetails {
     private Role role;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany
     @JsonManagedReference
     private List<Token> tokens;
-    @OneToMany(
-            mappedBy = "creator"
-    )
+    @OneToMany
     @JsonManagedReference
     @Builder.Default
     private List<Test> tests = new ArrayList<>();
