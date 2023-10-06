@@ -36,20 +36,21 @@ public class Test {
     /**
      * Creator of the test.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id")
+    @ManyToOne
     @JsonBackReference
     private User creator;
     /**
      * Collaborators for the test.
      */
     @OneToMany
+    @JsonManagedReference
     @Builder.Default
     private List<User> collaborators = new ArrayList<>();
     /**
      * Set for holding students.
      */
     @OneToMany
+    @JsonManagedReference
     @Builder.Default
     private List<User> students = new ArrayList<>();
     /**
@@ -60,8 +61,7 @@ public class Test {
     /**
      * Set for holding question for test.
      */
-    @OneToMany(
-            mappedBy = "test")
+    @OneToMany
     @JsonManagedReference
     @Builder.Default
     private List<Question> questions = new ArrayList<>();
