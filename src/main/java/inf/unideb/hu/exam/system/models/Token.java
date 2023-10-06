@@ -29,8 +29,7 @@ public class Token {
     private boolean revoked = false;
     @Builder.Default
     private boolean expired = false;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @ManyToOne
     @JsonBackReference
     private User user;
 }
