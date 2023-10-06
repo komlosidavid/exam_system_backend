@@ -117,38 +117,42 @@ public class TestServiceImpl implements TestService {
             }
         }
 
+        var test = Test.builder()
+                .subject(request.getSubject())
+                .collaborators(collaborators)
+                .students(students)
+                .creator(creatorOptional.get())
+                .build();
+
         var questions = new ArrayList<Question>();
-        // Create all answers.
         request.getQuestions().forEach(questionRequest -> {
             var question = Question.builder()
                     .question(questionRequest.getQuestion())
                     .type(QuestionType.valueOf(questionRequest.getType()))
                     .points(questionRequest.getPoints())
                     .build();
-
-            questionRequest.getAnswers().forEach(answerRequest -> {
-                var answer = Answer.builder()
-                        .answer(answerRequest.getAnswer())
-                        .question(question)
-                        .type(AnswerType.valueOf(answerRequest.getType()))
-                        .isCorrect(answerRequest.isCorrect())
-                        .build();
-                question.getAnswers().add(answer);
-            });
+            var answers = new ArrayList<Answer>();
+            if (questionRequest.getAnswers() != null) {
+                questionRequest.getAnswers().forEach(answerRequest -> {
+                    var answer = Answer.builder()
+                            .answer(answerRequest.getAnswer())
+                            .question(question)
+                            .type(AnswerType.valueOf(answerRequest.getType()))
+                            .isCorrect(answerRequest.isCorrect())
+                            .build();
+                    answers.add(answer);
+                    answerRepository.saveAll(answers);
+                    question.getAnswers().add(answer);
+                });
+            }
+            test.getQuestions().add(question);
             questions.add(question);
+            questionRepository.saveAll(questions);
         });
-
-        var test = Test.builder()
-                .subject(request.getSubject())
-                .collaborators(collaborators)
-                .questions(questions)
-                .creator(creatorOptional.get())
-                .build();
 
         repository.save(test);
 
         return HttpStatus.CREATED;
-
     }
 
     /**
