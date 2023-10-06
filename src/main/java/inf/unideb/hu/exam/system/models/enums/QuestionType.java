@@ -12,7 +12,7 @@ public enum QuestionType {
     /**
      * If the question has multiple answers.
      */
-    MULTIPLE_ANSWER,
+    MULTIPLE_ANSWERS,
     /**
      * Questions which are requires explanation.
      */
