@@ -15,6 +15,7 @@ import inf.unideb.hu.exam.system.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +23,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -30,6 +30,7 @@ import java.util.Optional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     /**
@@ -73,6 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 findByUsername(request.getUsername());
 
         if (userOptional.isPresent()) {
+            log.warn("User with username " + request.getUsername() + " was found and cannot be created!");
             return new Pair<>(Optional.empty(),
                     "User with this username was found!");
         }
@@ -80,6 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userOptional = repository.findByEmail(request.getEmail());
 
         if (userOptional.isPresent()) {
+            log.warn("User with email " + request.getEmail() + " was found and cannot be created!");
             return new Pair<>(
                     Optional.empty(),
                     "User with this email was found!");
@@ -99,6 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, accessToken);
 
+        log.info("User was created with id " + savedUser.getId());
         return new Pair<>(Optional.of(
                 new AuthenticationResponse(accessToken, refreshToken,
                         modelMapper.map(user, UserDto.class))),
@@ -127,6 +131,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         revokeAllUserTokens(user.get());
         saveUserToken(user.get(), accessToken);
 
+        log.info("User was authenticated with username: " + user.get().getUsername());
+
         return new AuthenticationResponse(accessToken, refreshToken,
                 modelMapper.map(user.get(), UserDto.class));
     }
@@ -145,6 +151,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final String refreshToken;
         final String username;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.error("Token not found or not acceptable!");
             return new Pair<>(Optional.empty(), "Forbidden!");
         }
         refreshToken = authHeader.substring(7);
@@ -163,6 +170,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
         }
 
+        log.error("Internal server error!");
         return new Pair<>(Optional.empty(), "Internal server error!");
     }
 
@@ -176,7 +184,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .token(accessToken)
                 .user(savedUser)
                 .build();
-        tokenRepository.save(token);
+        var newToken = tokenRepository.save(token);
+        log.info("Token was created with id " + newToken.getId());
     }
 
     /**
@@ -186,12 +195,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.
                 findAllValidTokenByUser(user.getId());
-        if (validUserTokens.isEmpty())
+        if (validUserTokens.isEmpty()) {
+            log.error("No valid tokens were found!");
             return;
+        }
+
         validUserTokens.forEach(token -> {
             token.setExpired(true);
             token.setRevoked(true);
         });
         tokenRepository.saveAll(validUserTokens);
+        log.info("Tokens were revoked for user " + user.getUsername());
     }
 }
