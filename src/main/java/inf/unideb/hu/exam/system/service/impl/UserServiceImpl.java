@@ -7,9 +7,12 @@ import inf.unideb.hu.exam.system.models.User;
 import inf.unideb.hu.exam.system.models.enums.Role;
 import inf.unideb.hu.exam.system.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +21,7 @@ import java.util.UUID;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     /**
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Page<User> getAllUsers(Pageable pageable) {
+        log.info("All users were get!");
         return repository.findAll(pageable);
     }
 
@@ -43,6 +48,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Page<User> getAllUsersByRole(Role role, Pageable pageable) {
+        log.info("All users were get by role " + role.name());
         return repository.findAllByRole(role, pageable);
     }
 
@@ -57,9 +63,22 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = repository.findById(id);
 
         if (userOptional.isPresent()) {
+            log.info("User was get by id " + id);
             return new Pair<>(userOptional, null);
         }
 
+        log.warn("User was not found with id " + id);
         return new Pair<>(Optional.empty(), "User was not found!");
+    }
+
+    /**
+     * Function to get {@link User} entities by fullname property.
+     * @param name of the {@link User}.
+     * @return a {@link List} of {@link User} entities.
+     */
+    @Override
+    public List<User> getUsersByFullName(String name) {
+        log.info("Get all users by name " + name);
+        return repository.findAllByFullNameContains(name);
     }
 }
