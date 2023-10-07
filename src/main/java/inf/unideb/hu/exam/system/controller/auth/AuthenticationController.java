@@ -2,6 +2,7 @@ package inf.unideb.hu.exam.system.controller.auth;
 
 import inf.unideb.hu.exam.system.models.Pair;
 import inf.unideb.hu.exam.system.models.ResponseMessage;
+import inf.unideb.hu.exam.system.models.User;
 import inf.unideb.hu.exam.system.request.AuthenticationRequest;
 import inf.unideb.hu.exam.system.request.CreateUserEntityRequest;
 import inf.unideb.hu.exam.system.response.AuthenticationResponse;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,13 +22,24 @@ import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * Controller class for handling authentication requests.
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
+    /**
+     * Reference for {@link AuthenticationServiceImpl} class.
+     */
     private final AuthenticationServiceImpl service;
 
+    /**
+     * Function to register a new {@link User} entity.
+     * @param request a {@link CreateUserEntityRequest} for create a new {@link User} entity.
+     * @return a {@link ResponseEntity} object of {@link AuthenticationResponse}.
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             consumes = APPLICATION_JSON_VALUE,
@@ -49,6 +60,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(registerResponse.getValue().get());
     }
 
+    /**
+     * Function to authenticate a {@link User}.
+     * @param request of {@link AuthenticationRequest}.
+     * @return a {@link ResponseEntity} of {@link AuthenticationResponse}.
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             consumes = APPLICATION_JSON_VALUE,
@@ -68,6 +84,12 @@ public class AuthenticationController {
         }
     }
 
+    /**
+     * Function to create new access token from the refresh token.
+     * @param request a {@link HttpServletRequest} object.
+     * @param response a {@link HttpServletResponse} object.
+     * @return a {@link ResponseEntity} with {@link AuthenticationResponse}.
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             produces = APPLICATION_JSON_VALUE,

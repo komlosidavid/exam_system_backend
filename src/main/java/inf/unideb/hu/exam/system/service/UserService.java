@@ -6,7 +6,6 @@ import inf.unideb.hu.exam.system.models.User;
 import inf.unideb.hu.exam.system.models.enums.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,7 +14,25 @@ import java.util.UUID;
  */
 public interface UserService {
 
+    /**
+     * Function to get all of the {@link User} entities.
+     * @param pageable a {@link Pageable} object.
+     * @return a {@link Page} of {@link User} entities.
+     */
     Page<User> getAllUsers(Pageable pageable);
+
+    /**
+     * Function to get all of the {@link User} entities by the requested {@link Role}.
+     * @param role is the requested {@link Role}.
+     * @param pageable is a {@link Pageable} object.
+     * @return a {@link Page} of {@link User} entities.
+     */
     Page<User> getAllUsersByRole(Role role, Pageable pageable);
+
+    /**
+     * Function to get a {@link User} by id property.
+     * @param id of the {@link User}.
+     * @return a {@link Pair} of {@link Optional} {@link User}.
+     */
     Pair<Optional<User>> getUserById(UUID id);
 }

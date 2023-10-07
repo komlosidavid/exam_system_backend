@@ -19,14 +19,28 @@ import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+/**
+ * Controller class for handling {@link User} entity operations.
+ */
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
 
+    /**
+     * Reference of {@link UserServiceImpl} class.
+     */
     private final UserServiceImpl service;
+    /**
+     * Reference of {@link ModelMapper} object.
+     */
     private final ModelMapper modelMapper;
 
+    /**
+     * Function to get all {@link User} entities.
+     * @param pageable a {@link Pageable} object.
+     * @return a {@link Page} object containing {@link UserDto} objects.
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             produces = APPLICATION_JSON_VALUE
@@ -37,6 +51,13 @@ public class UserController {
                 modelMapper.map(user, UserDto.class));
     }
 
+    /**
+     * Function to get all {@link User} entities according to the request.
+     * @param id of the {@link User} entity.
+     * @param role of the {@link User} entity.
+     * @param pageable a {@link Pageable} object.
+     * @return a {@link ResponseEntity} object with the corresponding result.
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             produces = APPLICATION_JSON_VALUE,
@@ -45,6 +66,7 @@ public class UserController {
     public ResponseEntity<?> getUser(@RequestParam(name = "id", required = false) UUID id,
                                      @RequestParam(name = "role", required = false) String role,
                                      Pageable pageable) {
+        // If the id was given get the corresponding user.
         if (id != null) {
             Pair<Optional<User>> serviceResponse = service.getUserById(id);
 
@@ -57,12 +79,16 @@ public class UserController {
             return new ResponseEntity<>(
                     new ResponseMessage(serviceResponse.getMessage()),
                     HttpStatus.NOT_FOUND);
-        } else if (role != null) {
+        }
+        // If role was given return all the users with that role.
+        else if (role != null) {
             var result = service.getAllUsersByRole(Role.valueOf(role), pageable);
             return new ResponseEntity<>(
                     result.map(user -> modelMapper.map(user, UserDto.class)),
                     HttpStatus.OK);
-        } else {
+        }
+        // If nothing was given.
+        else {
             return ResponseEntity.badRequest().build();
         }
     }

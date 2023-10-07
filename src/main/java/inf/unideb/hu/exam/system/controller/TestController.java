@@ -2,7 +2,7 @@
 package inf.unideb.hu.exam.system.controller;
 
 import inf.unideb.hu.exam.system.dto.TestDto;
-import inf.unideb.hu.exam.system.models.ResponseMessage;
+import inf.unideb.hu.exam.system.models.GetAllTestsFilter;
 import inf.unideb.hu.exam.system.models.Test;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
 import inf.unideb.hu.exam.system.service.impl.TestServiceImpl;
@@ -35,7 +35,7 @@ public class TestController {
     private final ModelMapper modelMapper;
 
     /**
-     * Function to create a new {@link inf.unideb.hu.exam.system.models.Test} entity.
+     * Function to create a new {@link Test} entity.
      * @param request is the payload.
      * @return a new {@link ResponseEntity} with the created entity data.
      */
@@ -50,8 +50,12 @@ public class TestController {
     }
 
     /**
-     * Function to get all the test entities.
-     * @return a list of {@link inf.unideb.hu.exam.system.models.Test} entities.
+     * Controller function to get all test
+     * entities for the corresponding request.
+     * @param request a {@link HttpServletRequest}.
+     * @param filter of {@link GetAllTestsFilter}.
+     * @param pageable a {@link Pageable} object.
+     * @return a {@link Page} object containing {@link TestDto} objects.
      */
     @RequestMapping(
             method = RequestMethod.GET,

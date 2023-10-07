@@ -1,3 +1,4 @@
+
 package inf.unideb.hu.exam.system.service.impl;
 
 import inf.unideb.hu.exam.system.dao.TokenDao;
@@ -21,22 +22,53 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Service class for authentications.
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    /**
+     * Reference of {@link UserDao}.
+     */
     private final UserDao repository;
+
+    /**
+     * Reference of {@link TokenDao}.
+     */
     private final TokenDao tokenRepository;
+
+    /**
+     * Reference of {@link ModelMapper}.
+     */
     private final ModelMapper modelMapper;
+
+    /**
+     * Reference of {@link PasswordEncoder}.
+     */
     private final PasswordEncoder encoder;
-    private final TokenService jwtService   ;
+
+    /**
+     * Reference of {@link TokenService}.
+     */
+    private final TokenService jwtService;
+
+    /**
+     * Reference of {@link AuthenticationManager}.
+     */
     private final AuthenticationManager manager;
 
+    /**
+     * Function for register request.
+     * @param request is a {@link CreateUserEntityRequest}.
+     * @return a {@link Pair} of {@link Optional} {@link AuthenticationResponse}.
+     */
     @Override
-    public Pair<Optional<AuthenticationResponse>> register(
-            CreateUserEntityRequest request) {
+    public Pair<Optional<AuthenticationResponse>> register(CreateUserEntityRequest request) {
         Optional<User> userOptional = repository.
                 findByUsername(request.getUsername());
 
@@ -73,6 +105,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 null);
     }
 
+    /**
+     * Function to authenticate a {@link User}.
+     * @param request is a {@link AuthenticationRequest}.
+     * @return a new {@link AuthenticationResponse}.
+     */
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         manager.authenticate(
@@ -94,10 +131,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 modelMapper.map(user.get(), UserDto.class));
     }
 
+    /**
+     * Function to get a new access token using the refresh token.
+     * @param request  of {@link HttpServletRequest}.
+     * @param response of {@link HttpServletResponse}.
+     * @return a {@link Pair} of {@link Optional} {@link AuthenticationResponse}.
+     */
     @Override
-    public Pair<Optional<AuthenticationResponse>> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response) {
+    public Pair<Optional<AuthenticationResponse>> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         final String authHeader =
 
                 request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -119,13 +160,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         new AuthenticationResponse(accessToken, refreshToken,
                                 modelMapper.map(user, UserDto.class));
                 return new Pair<>(Optional.of(authResponse), null);
-                //new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
         }
 
         return new Pair<>(Optional.empty(), "Internal server error!");
     }
 
+    /**
+     * Method for save a {@link User} {@link Token} after authentication.
+     * @param savedUser of the {@link User} entity.
+     * @param accessToken is the token.
+     */
     private void saveUserToken(User savedUser, String accessToken) {
         var token = Token.builder()
                 .token(accessToken)
@@ -134,6 +179,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenRepository.save(token);
     }
 
+    /**
+     * Method to revoke all tokens for the {@link User}.
+     * @param user is the {@link User}.
+     */
     private void revokeAllUserTokens(User user) {
         var validUserTokens = tokenRepository.
                 findAllValidTokenByUser(user.getId());

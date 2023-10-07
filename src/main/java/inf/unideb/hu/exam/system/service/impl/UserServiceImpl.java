@@ -9,9 +9,7 @@ import inf.unideb.hu.exam.system.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,20 +21,37 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     /**
-     * User dao dependency injection.
+     * Reference of {@link UserDao}.
      */
     private final UserDao repository;
 
+    /**
+     * Function to get all of the {@link User} entities.
+     * @param pageable a {@link Pageable} object.
+     * @return a {@link Page} of {@link User} entities.
+     */
     @Override
     public Page<User> getAllUsers(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
+    /**
+     * Function to get all of the {@link User} entities by the requested {@link Role}.
+     * @param role     is the requested {@link Role}.
+     * @param pageable is a {@link Pageable} object.
+     * @return a {@link Page} of {@link User} entities.
+     */
     @Override
     public Page<User> getAllUsersByRole(Role role, Pageable pageable) {
         return repository.findAllByRole(role, pageable);
     }
 
+    /**
+     * Function to get a {@link User} by id property.
+     *
+     * @param id of the {@link User}.
+     * @return a {@link Pair} of {@link Optional} {@link User}.
+     */
     @Override
     public Pair<Optional<User>> getUserById(UUID id) {
         Optional<User> userOptional = repository.findById(id);
@@ -47,5 +62,4 @@ public class UserServiceImpl implements UserService {
 
         return new Pair<>(Optional.empty(), "User was not found!");
     }
-
 }

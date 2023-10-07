@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,15 +33,33 @@ import java.util.UUID;
 @AllArgsConstructor
 public class TestServiceImpl implements TestService {
 
+    /**
+     * Reference for {@link TestDao}.
+     */
     private final TestDao repository;
+
+    /**
+     * Reference for {@link UserDao}.
+     */
     private final UserDao userRepository;
+
+    /**
+     * Reference for {@link QuestionDao}.
+     */
     private final QuestionDao questionRepository;
+
+    /**
+     * Reference for {@link AnswerDao}.
+     */
     private final AnswerDao answerRepository;
+
+    /**
+     * Reference for {@link TokenService}.
+     */
     private final TokenService jwtService;
 
     /**
      * Get all test entities from the database.
-     *
      * @return a {@link List} of {@link Test} entities.
      */
     @Override
@@ -78,7 +95,6 @@ public class TestServiceImpl implements TestService {
 
     /**
      * Function to create a {@link Test} entity.
-     *
      * @param request for creating {@link Test} entity.
      * @return a {@link Pair} class holding the data and the response message.
      */
@@ -120,6 +136,7 @@ public class TestServiceImpl implements TestService {
         var test = Test.builder()
                 .subject(request.getSubject())
                 .collaborators(collaborators)
+                .opensAt(request.getOpensAt())
                 .students(students)
                 .creator(creatorOptional.get())
                 .build();
@@ -138,7 +155,7 @@ public class TestServiceImpl implements TestService {
                             .answer(answerRequest.getAnswer())
                             .question(question)
                             .type(AnswerType.valueOf(answerRequest.getType()))
-                            .isCorrect(answerRequest.isCorrect())
+                            .correct(answerRequest.isCorrect())
                             .build();
                     answers.add(answer);
                     answerRepository.saveAll(answers);
@@ -157,7 +174,6 @@ public class TestServiceImpl implements TestService {
 
     /**
      * Function to update a {@link Test} entity.
-     *
      * @param id      for identify the {@link Test} entity.
      * @param request for updating {@link Test} entity.
      * @return a {@link Pair} class holding the data and the response message.

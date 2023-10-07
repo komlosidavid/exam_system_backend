@@ -20,10 +20,32 @@ import java.util.UUID;
 @Repository
 public interface UserDao extends JpaRepository<User, UUID> {
 
-
-
+    /**
+     * Function to get a {@link User} entity by username.
+     * @param username of the {@link User} entity.
+     * @return an {@link Optional} of the result {@link User} entity.
+     */
     Optional<User> findByUsername(@Param("username") String username);
+
+    /**
+     * Function to get a {@link User} entity by email property.
+     * @param email of the {@link User} entity.
+     * @return an {@link Optional} of the result {@link User} entity.
+     */
     Optional<User> findByEmail(@Param("email") String email);
+
+    /**
+     * Function to get all {@link User} entities.
+     * @param pageable a {@link Pageable} object.
+     * @return a {@link Page} of the result {@link User} entities.
+     */
     Page<User> findAll(Pageable pageable);
+
+    /**
+     * Function to fing all {@link User} entities by {@link Role} property.
+     * @param role {@link Role} property of the {@link User} entity.
+     * @param pageable a {@link Pageable} object.
+     * @return a {@link Page} of the result {@link User} entities.
+     */
     Page<User> findAllByRole(@Param("role") Role role, Pageable pageable);
 }

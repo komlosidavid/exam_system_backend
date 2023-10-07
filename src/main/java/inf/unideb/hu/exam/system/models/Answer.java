@@ -3,13 +3,17 @@ package inf.unideb.hu.exam.system.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import inf.unideb.hu.exam.system.models.enums.AnswerType;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.UUID;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 
 /**
  * Entity class for holding answer data.
@@ -22,16 +26,32 @@ import java.util.UUID;
 public class Answer {
 
     /**
-     * Primary key.
+     * ID.
      */
     @Id
     @GeneratedValue
     private UUID id;
+
+    /**
+     * Reference for {@link Question} entity.
+     */
     @ManyToOne
     @JsonBackReference
     private Question question;
+
+    /**
+     * Answer property.
+     */
     private String answer;
-    private boolean isCorrect;
+
+    /**
+     * Correctness of the answer.
+     */
+    private boolean correct;
+
+    /**
+     * {@link AnswerType} of the answer.
+     */
     @Enumerated(EnumType.STRING)
     private AnswerType type;
 }
