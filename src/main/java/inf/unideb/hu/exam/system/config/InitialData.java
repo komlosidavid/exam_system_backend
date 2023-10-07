@@ -29,6 +29,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.ADMIN)
                 .build();
+        user.createFullName();
 
         repository.save(user);
 
@@ -40,6 +41,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
+        user.createFullName();
 
         repository.save(user);
 
@@ -51,6 +53,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
+        user.createFullName();
 
         repository.save(user);
 
@@ -62,6 +65,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
+        user.createFullName();
 
         repository.save(user);
 
@@ -74,6 +78,7 @@ public class InitialData {
                 .role(Role.TEACHER)
                 .build();
         repository.save(user);
+        user.createFullName();
 
         user = User.builder()
                 .firstname("Adorján")
@@ -83,7 +88,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
-
+        user.createFullName();
 
         repository.save(user);
 
@@ -95,7 +100,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
-
+        user.createFullName();
 
         repository.save(user);
 
@@ -107,6 +112,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.STUDENT)
                 .build();
+        user.createFullName();
 
         repository.save(user);
 
@@ -118,6 +124,7 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.STUDENT)
                 .build();
+        user.createFullName();
 
         repository.save(user);
     }
