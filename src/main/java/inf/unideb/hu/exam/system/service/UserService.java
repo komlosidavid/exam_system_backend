@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 /**
  * Interface for handling user service methods and functions.
@@ -35,4 +36,11 @@ public interface UserService {
      * @return a {@link Pair} of {@link Optional} {@link User}.
      */
     Pair<Optional<User>> getUserById(UUID id);
+
+    /**
+     * Function to get {@link User} entities by fullname property.
+     * @param fullName of the {@link User}.
+     * @return a {@link List} of {@link User} entities.
+     */
+    List<User> getUsersByFullName(String fullName);
 }
