@@ -77,8 +77,9 @@ public class InitialData {
                 .password(encoder.encode("password"))
                 .role(Role.TEACHER)
                 .build();
-        repository.save(user);
         user.createFullName();
+
+        repository.save(user);
 
         user = User.builder()
                 .firstname("Adorján")
