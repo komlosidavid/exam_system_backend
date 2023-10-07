@@ -10,6 +10,7 @@ import inf.unideb.hu.exam.system.service.impl.AuthenticationServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
 
     /**
@@ -56,7 +58,6 @@ public class AuthenticationController {
                     new ResponseMessage(registerResponse.getMessage()),
                     HttpStatus.BAD_REQUEST);
         }
-
         return ResponseEntity.ok(registerResponse.getValue().get());
     }
 
@@ -78,6 +79,7 @@ public class AuthenticationController {
                     service.authenticate(request);
             return ResponseEntity.ok(authenticate);
         } catch (BadCredentialsException exception) {
+            log.warn("User passed wrong credentials!");
             return new ResponseEntity<>(
                     new ResponseMessage(exception.getMessage()),
                     HttpStatus.FORBIDDEN);
@@ -101,15 +103,18 @@ public class AuthenticationController {
         var authResponse = service.refreshToken(request, response);
 
         if (authResponse.getValue().isPresent()) {
+            log.info("Access token generated from refresh token!");
             return ResponseEntity.ok(authResponse.getValue().get());
         }
 
         if (authResponse.getMessage().equals("Forbidden!")) {
+            log.warn("Getting access token from refresh token was forbidden!");
             return new ResponseEntity<>(
                     new ResponseMessage(authResponse.getMessage()),
                     HttpStatus.FORBIDDEN);
         }
         else {
+            log.error("Internal server error!");
             return new ResponseEntity<>(
                     new ResponseMessage(authResponse.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
