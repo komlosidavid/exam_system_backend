@@ -3,8 +3,8 @@ package inf.unideb.hu.exam.system.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import inf.unideb.hu.exam.system.models.enums.Role;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.OneToMany;
+
 import java.time.Instant;
 import java.util.*;
 
@@ -55,6 +47,11 @@ public class User implements UserDetails {
     @JsonIgnore
     @Column(nullable = false)
     private String lastname;
+
+    /**
+     * FullName property.
+     */
+    private String fullName;
 
     /**
      * Username property.
@@ -103,12 +100,12 @@ public class User implements UserDetails {
     private Instant registeredAt = new Date().toInstant();
 
     /**
-     * Function to get the full name of the user.
-     * @return the user's full name.
+     * Method to set the fullName property.
      */
-    @JsonProperty
-    public String getFullname() {
-        return lastname + " " + firstname;
+    public void createFullName() {
+        if (firstname != null && lastname != null) {
+            fullName = lastname + " " + firstname;
+        }
     }
 
     /**
