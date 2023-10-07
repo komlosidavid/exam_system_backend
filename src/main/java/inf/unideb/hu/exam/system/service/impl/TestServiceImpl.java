@@ -15,6 +15,7 @@ import inf.unideb.hu.exam.system.service.TestService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @Service
 @Transactional
 @AllArgsConstructor
+@Slf4j
 public class TestServiceImpl implements TestService {
 
     /**
@@ -76,20 +78,24 @@ public class TestServiceImpl implements TestService {
             assert user.isPresent();
 
             if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.ALL)) {
+                log.info("Get all tests by filter: " + GetAllTestsFilter.ALL);
                 return repository
                         .findByCreatorOrCollaborators(user.get(),
                                 user.get(), pageable);
             }
             else if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.OWN)) {
+                log.info("Get all tests by filter: " + GetAllTestsFilter.OWN);
                 return repository
                         .findByCreator(user.get(), pageable);
             }
             else if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.COLLABORATING)) {
+                log.info("Get all tests by filter: " + GetAllTestsFilter.COLLABORATING);
                 return repository
                         .findByCollaborators(user.get(), pageable);
             }
         }
 
+        log.error("User not authenticated!");
         return Page.empty();
     }
 
@@ -106,6 +112,7 @@ public class TestServiceImpl implements TestService {
 
         // Check if the creator exists.
         if (creatorOptional.isEmpty()) {
+            log.error("User with id " + request.getCreator() + " was not found for creator!");
             return HttpStatus.BAD_REQUEST;
         }
 
@@ -114,6 +121,7 @@ public class TestServiceImpl implements TestService {
         for (UUID collaborator : request.getCollaborators()) {
             collaboratorOptional = userRepository.findById(collaborator);
             if (collaboratorOptional.isEmpty()) {
+                log.error("User with id " + collaborator + " was not found for collaborator!");
                 return HttpStatus.BAD_REQUEST;
             }
             else {
@@ -126,6 +134,7 @@ public class TestServiceImpl implements TestService {
         for (UUID student : request.getStudents()) {
             studentOptional = userRepository.findById(student);
             if (studentOptional.isEmpty()) {
+                log.error("User with id " + student + " was not found for student!");
                 return HttpStatus.BAD_REQUEST;
             }
             else {
@@ -167,8 +176,9 @@ public class TestServiceImpl implements TestService {
             questionRepository.saveAll(questions);
         });
 
-        repository.save(test);
+        var newTest = repository.save(test);
 
+        log.info("Test was created with id " + newTest.getId());
         return HttpStatus.CREATED;
     }
 
