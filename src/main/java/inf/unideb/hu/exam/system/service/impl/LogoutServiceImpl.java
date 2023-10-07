@@ -5,6 +5,7 @@ import inf.unideb.hu.exam.system.dao.TokenDao;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LogoutServiceImpl implements LogoutHandler {
 
     /**
@@ -35,6 +37,7 @@ public class LogoutServiceImpl implements LogoutHandler {
                 request.getHeader(HttpHeaders.AUTHORIZATION);
         final String accessToken;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.error("Token was not found or not acceptable!");
             return;
         }
         accessToken = authHeader.substring(7);
@@ -45,6 +48,9 @@ public class LogoutServiceImpl implements LogoutHandler {
             storedToken.setRevoked(true);
             tokenRepository.save(storedToken);
             SecurityContextHolder.clearContext();
+            log.info("Logout was successful for user " + authentication.getPrincipal().toString());
+        } else {
+            log.error("Token was not found!");
         }
     }
 }
