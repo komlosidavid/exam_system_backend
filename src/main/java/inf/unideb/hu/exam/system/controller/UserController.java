@@ -1,5 +1,6 @@
 package inf.unideb.hu.exam.system.controller;
 
+import inf.unideb.hu.exam.system.dao.UserDao;
 import inf.unideb.hu.exam.system.dto.UserDto;
 import inf.unideb.hu.exam.system.models.Pair;
 import inf.unideb.hu.exam.system.models.ResponseMessage;
@@ -13,9 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -55,6 +57,7 @@ public class UserController {
      * Function to get all {@link User} entities according to the request.
      * @param id of the {@link User} entity.
      * @param role of the {@link User} entity.
+     * @param fullname of the {@link User} entity.
      * @param pageable a {@link Pageable} object.
      * @return a {@link ResponseEntity} object with the corresponding result.
      */
@@ -65,6 +68,7 @@ public class UserController {
     )
     public ResponseEntity<?> getUser(@RequestParam(name = "id", required = false) UUID id,
                                      @RequestParam(name = "role", required = false) String role,
+                                     @RequestParam(name = "fullname", required = false) String fullname,
                                      Pageable pageable) {
         // If the id was given get the corresponding user.
         if (id != null) {
@@ -86,6 +90,13 @@ public class UserController {
             return new ResponseEntity<>(
                     result.map(user -> modelMapper.map(user, UserDto.class)),
                     HttpStatus.OK);
+        }
+        else if (fullname != null) {
+            var result = service.getUsersByFullName(fullname.toLowerCase());
+            List<UserDto> mapped = result.stream()
+                    .map(user -> modelMapper.map(user, UserDto.class))
+                    .toList();
+            return ResponseEntity.ok(mapped);
         }
         // If nothing was given.
         else {
