@@ -3,22 +3,17 @@ package inf.unideb.hu.exam.system.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+
 import java.time.Instant;
-import java.util.UUID;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Entity class for holding test infos.
@@ -58,7 +53,7 @@ public class Test {
     /**
      * Collaborators for the test.
      */
-    @OneToMany
+    @ManyToMany(mappedBy = "collaboratorTests")
     @JsonManagedReference
     @Builder.Default
     private List<User> collaborators = new ArrayList<>();
@@ -66,7 +61,7 @@ public class Test {
     /**
      * Set for holding students.
      */
-    @OneToMany
+    @ManyToMany(mappedBy = "studentTests")
     @JsonManagedReference
     @Builder.Default
     private List<User> students = new ArrayList<>();
