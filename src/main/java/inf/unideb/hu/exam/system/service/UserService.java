@@ -39,8 +39,23 @@ public interface UserService {
 
     /**
      * Function to get {@link User} entities by fullname property.
-     * @param fullName of the {@link User}.
+     * @param name of the {@link User}.
      * @return a {@link List} of {@link User} entities.
      */
-    List<User> getUsersByFullName(String fullName);
+    List<User> getUsersByName(String name);
+
+    /**
+     * Function to get {@link User} entities by name and {@link Role}.
+     * @param name of the {@link User}.
+     * @param role of the {@link User}.
+     * @return a {@link List} of {@link User} entities.
+     */
+    List<User> getUsersByNameAndRole(String name, String role);
+
+    /**
+     * Function to get all {@link User} entities which has an id in the data.
+     * @param data for holding UUIDs.
+     * @return a {@link List} of {@link User} entities.
+     */
+    List<User> getAllUsersByUUIDList(List<UUID> data);
 }
