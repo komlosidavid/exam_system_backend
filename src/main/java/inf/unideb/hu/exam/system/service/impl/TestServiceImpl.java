@@ -9,18 +9,15 @@ import inf.unideb.hu.exam.system.models.*;
 import inf.unideb.hu.exam.system.models.enums.AnswerType;
 import inf.unideb.hu.exam.system.models.enums.QuestionType;
 import inf.unideb.hu.exam.system.request.CreateTestEntityRequest;
-import inf.unideb.hu.exam.system.request.UpdateTestEntityRequest;
-import inf.unideb.hu.exam.system.security.token.TokenService;
 import inf.unideb.hu.exam.system.service.TestService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -56,46 +53,39 @@ public class TestServiceImpl implements TestService {
     private final AnswerDao answerRepository;
 
     /**
-     * Reference for {@link TokenService}.
-     */
-    private final TokenService jwtService;
-
-    /**
      * Get all test entities from the database.
-     * @return a {@link List} of {@link Test} entities.
+     * @param username of the {@link User}.
+     * @param filter {@link GetAllTestsFilter} for the filter.
+     * @param pageable for multiple entities.
+     * @return a {@link Page} of {@link Test} entities.
      */
     @Override
     public Page<Test> getAllTests(
-            HttpServletRequest request,
-            String filter,
+            String username,
+            GetAllTestsFilter filter,
             Pageable pageable) {
-        final String headers = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String token = headers.substring(7);
-        final String username = jwtService.extractUsername(token);
 
-        if (username != null) {
-            var user = userRepository.findByUsername(username);
-            assert user.isPresent();
-
-            if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.ALL)) {
-                log.info("Get all tests by filter: " + GetAllTestsFilter.ALL);
+        var user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            if (filter.equals(GetAllTestsFilter.ALL)) {
+                log.info("Get all tests by filter: " + filter);
                 return repository
                         .findByCreatorOrCollaborators(user.get(),
                                 user.get(), pageable);
             }
-            else if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.OWN)) {
-                log.info("Get all tests by filter: " + GetAllTestsFilter.OWN);
+            else if (filter.equals(GetAllTestsFilter.OWN)) {
+                log.info("Get all tests by filter: " + filter);
                 return repository
                         .findByCreator(user.get(), pageable);
             }
-            else if (GetAllTestsFilter.valueOf(filter).equals(GetAllTestsFilter.COLLABORATING)) {
-                log.info("Get all tests by filter: " + GetAllTestsFilter.COLLABORATING);
+            else if (filter.equals(GetAllTestsFilter.COLLABORATING)) {
+                log.info("Get all tests by filter: " + filter);
                 return repository
                         .findByCollaborators(user.get(), pageable);
             }
         }
 
-        log.error("User not authenticated!");
+        log.error("User with username " + username + " was not found!" );
         return Page.empty();
     }
 
@@ -178,18 +168,38 @@ public class TestServiceImpl implements TestService {
 
         var newTest = repository.save(test);
 
+        collaborators.forEach(collaborator -> {
+            collaborator.getCollaboratorTests().add(newTest);
+        });
+
+        students.forEach(student -> {
+            student.getStudentTests().add(newTest);
+        });
+
         log.info("Test was created with id " + newTest.getId());
         return HttpStatus.CREATED;
     }
 
     /**
-     * Function to update a {@link Test} entity.
-     * @param id      for identify the {@link Test} entity.
-     * @param request for updating {@link Test} entity.
-     * @return a {@link Pair} class holding the data and the response message.
+     * Function to get all {@link Test} entities by subject property.
+     * @param username of the {@link User}.
+     * @param subject of the {@link Test}.
+     * @return a {@link List} of {@link Test} entities.
      */
     @Override
-    public Pair<Optional<Test>> updateTest(UUID id, UpdateTestEntityRequest request) {
-        return null;
+    public List<Test> getAllTestsWithSubjectName(String username,
+                                                 String subject) {
+        log.info("Get all test with subject containing " + subject);
+        return repository.findAllBySubjectContaining(subject.toLowerCase(), username);
+    }
+
+    /**
+     * Function to get a {@link Test} entity by id.
+     * @param id of the {@link Test}.
+     * @return an {@link Optional} of {@link Test} entity.
+     */
+    @Override
+    public Optional<Test> getTestById(UUID id) {
+        return repository.findById(id);
     }
 }
