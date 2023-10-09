@@ -60,5 +60,21 @@ public interface UserDao extends JpaRepository<User, UUID> {
             WHERE LOWER(u.firstname) LIKE %:name% OR 
             LOWER(u.lastname) LIKE %:name%
     """)
-    List<User> findAllByFullNameContains(String name);
+    List<User> findAllByFullNameContains(@Param("name") String name);
+
+    /**
+     * Function to get all {@link User} entities by name containing and {@link Role}.
+     * @param name of the {@link User}.
+     * @param role of the {@link User}.
+     * @return a {@link List} of {@link User} entities.
+     */
+    @Query("""
+        SELECT u
+            FROM User u
+            WHERE (LOWER(u.firstname) LIKE %:name% OR
+            LOWER(u.lastname) LIKE %:name%) AND
+            u.role = :role
+    """)
+    List<User> findAllByFullNameContainingAndRole(@Param("name") String name,
+                                                  @Param("role") Role role);
 }
