@@ -1,6 +1,7 @@
 
 package inf.unideb.hu.exam.system.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import inf.unideb.hu.exam.system.models.enums.Role;
@@ -92,6 +93,24 @@ public class User implements UserDetails {
     @JsonManagedReference
     @Builder.Default
     private List<Test> tests = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_collaborator_tests",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "test_id")
+    )
+    @JsonBackReference
+    private List<Test> collaboratorTests = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_student_tests",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "test_id")
+    )
+    @JsonBackReference
+    private List<Test> studentTests = new ArrayList<>();
 
     /**
      * RegisteredAt property.
