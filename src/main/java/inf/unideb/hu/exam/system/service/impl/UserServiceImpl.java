@@ -77,8 +77,30 @@ public class UserServiceImpl implements UserService {
      * @return a {@link List} of {@link User} entities.
      */
     @Override
-    public List<User> getUsersByFullName(String name) {
+    public List<User> getUsersByName(String name) {
         log.info("Get all users by name " + name);
         return repository.findAllByFullNameContains(name);
+    }
+
+    /**
+     * Function to get {@link User} entities by name and {@link Role}.
+     * @param name of the {@link User}.
+     * @param role of the {@link User}.
+     * @return a {@link List} of {@link User} entities.
+     */
+    @Override
+    public List<User> getUsersByNameAndRole(String name, String role) {
+        log.info("Get all users by name " + name + " and role " + role);
+        return repository.findAllByFullNameContainingAndRole(name, Role.valueOf(role));
+    }
+
+    /**
+     * Function to get all {@link User} entities which has an id in the data.
+     * @param data for holding UUIDs.
+     * @return a {@link List} of {@link User} entities.
+     */
+    @Override
+    public List<User> getAllUsersByUUIDList(List<UUID> data) {
+        return repository.findAllById(data);
     }
 }
