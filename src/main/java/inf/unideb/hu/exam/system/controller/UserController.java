@@ -1,6 +1,5 @@
 package inf.unideb.hu.exam.system.controller;
 
-import inf.unideb.hu.exam.system.dao.UserDao;
 import inf.unideb.hu.exam.system.dto.UserDto;
 import inf.unideb.hu.exam.system.models.Pair;
 import inf.unideb.hu.exam.system.models.ResponseMessage;
@@ -14,10 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -57,7 +56,7 @@ public class UserController {
      * Function to get all {@link User} entities according to the request.
      * @param id of the {@link User} entity.
      * @param role of the {@link User} entity.
-     * @param fullname of the {@link User} entity.
+     * @param name of the {@link User} entity.
      * @param pageable a {@link Pageable} object.
      * @return a {@link ResponseEntity} object with the corresponding result.
      */
@@ -68,7 +67,7 @@ public class UserController {
     )
     public ResponseEntity<?> getUser(@RequestParam(name = "id", required = false) UUID id,
                                      @RequestParam(name = "role", required = false) String role,
-                                     @RequestParam(name = "fullname", required = false) String fullname,
+                                     @RequestParam(name = "name", required = false) String name,
                                      Pageable pageable) {
         // If the id was given get the corresponding user.
         if (id != null) {
@@ -84,6 +83,13 @@ public class UserController {
                     new ResponseMessage(serviceResponse.getMessage()),
                     HttpStatus.NOT_FOUND);
         }
+        else if (role != null && name != null) {
+            var result = service.getUsersByNameAndRole(name, role);
+            List<UserDto> mapped = result.stream()
+                    .map(user -> modelMapper.map(user, UserDto.class))
+                    .toList();
+            return ResponseEntity.ok(mapped);
+        }
         // If role was given return all the users with that role.
         else if (role != null) {
             var result = service.getAllUsersByRole(Role.valueOf(role), pageable);
@@ -91,8 +97,8 @@ public class UserController {
                     result.map(user -> modelMapper.map(user, UserDto.class)),
                     HttpStatus.OK);
         }
-        else if (fullname != null) {
-            var result = service.getUsersByFullName(fullname.toLowerCase());
+        else if (name != null) {
+            var result = service.getUsersByName(name.toLowerCase());
             List<UserDto> mapped = result.stream()
                     .map(user -> modelMapper.map(user, UserDto.class))
                     .toList();
@@ -102,5 +108,23 @@ public class UserController {
         else {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    /**
+     * Function to get all {@link User} entities which has an id in the data.
+     * @param data for holding UUIDs.
+     * @return a {@link ResponseEntity} which holds {@link User} entities.
+     */
+    @RequestMapping(
+            method = RequestMethod.POST,
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE,
+            path = "/getall"
+    )
+    public ResponseEntity<?> getAllUserFromUUIDList(@RequestBody List<UUID> data) {
+        var result = service.getAllUsersByUUIDList(data);
+        var mapped = result.stream().map(user -> modelMapper.map(user, UserDto.class)).toList();
+
+        return ResponseEntity.ok(mapped);
     }
 }
